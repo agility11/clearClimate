@@ -3,7 +3,9 @@ const isAuth = require('./../middleware/authMiddleware');
 const router = express.Router();
 const projectsController = require('./../controllers/projectController');
 
-router.route('/').get(isAuth.Protected, projectsController.getAllProjects).post(projectsController.createProject);
+router.route('/')
+.get(isAuth.Protected, projectsController.getAllProjects)
+.post(isAuth.Protected, isAuth.Restrict('admin', 'vc-admin'),projectsController.createProject);
 
 router
   .route('/:id')
