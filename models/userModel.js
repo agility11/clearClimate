@@ -48,6 +48,11 @@ const userAuthSchema =joi.object({
     passwordConfirm: joi.ref("password")
  });
 
+ const loginAuthSchema = joi.object({
+  email: joi.string().email().required(),
+  password: joi.string().min(8).required(),
+});
+
 userSchema.pre('save', async function(next){
  
     if(!this.isModified('password')) return next();
@@ -56,7 +61,9 @@ userSchema.pre('save', async function(next){
     next();
 })
 
+
 const User = mongoose.model('User',userSchema);
-module.exports.userAuthSchema=userAuthSchema
+module.exports.userAuthSchema=userAuthSchema;
+module.exports.loginAuthSchema = loginAuthSchema;
 
 module.exports.User =User

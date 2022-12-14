@@ -38,3 +38,36 @@ exports.signUp = catchAsync( async(req,res,next)=>{
         }
     });
 });
+
+
+exports.login = catchAsync(async (req, res, next) => {
+  // check if the email and password exist
+  const { email, password } = req.body;
+  const value = await loginAuthSchema.validate(req.body);
+  const { error } = value;
+  if (error) {
+    return res.status(400).json({
+      message: error.details[0].message,
+    });
+  }
+
+  // check if a user exists in database and password is corrrect
+
+  const user = await User.findOne({ email }).select('+password');
+
+  if (!user || !(await user.correctPassword(password, user.password))) {
+    return res.status(401).json({
+      status: false,
+      message: 'Incorect email or password',
+    });
+  }
+
+  // if everything is ok, senf token to a client
+  const token = authToken(user._id);
+
+  res.status(200).json({
+    status: true,
+    token,
+    message: 'logged in successfully',
+  });
+});
